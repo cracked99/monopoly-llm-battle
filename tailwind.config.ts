@@ -9,6 +9,64 @@ export default {
   ],
   theme: {
     extend: {
+      keyframes: {
+        'pulse-fast': {
+          '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+          '50%': { opacity: '1', transform: 'scale(1.02)' },
+        },
+        'pulse-glow': {
+          '0%, 100%': { opacity: '0.3' },
+          '50%': { opacity: '0.8' },
+        },
+        'scan-line': {
+          '0%': { top: '0%', opacity: '0' },
+          '10%': { opacity: '1' },
+          '90%': { opacity: '1' },
+          '100%': { top: '100%', opacity: '0' },
+        },
+        'corner-pulse': {
+          '0%, 100%': { opacity: '0.5', transform: 'scale(1)' },
+          '50%': { opacity: '1', transform: 'scale(1.1)' },
+        },
+        'player-bounce': {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.15)' },
+        },
+        'dot-pulse': {
+          '0%, 100%': { transform: 'scale(1)', opacity: '0.7' },
+          '50%': { transform: 'scale(1.3)', opacity: '1' },
+        },
+        'glow-ring': {
+          '0%, 100%': { 
+            boxShadow: '0 0 8px 2px var(--glow-color, rgba(255,255,255,0.3))',
+            opacity: '0.6'
+          },
+          '50%': { 
+            boxShadow: '0 0 20px 4px var(--glow-color, rgba(255,255,255,0.5))',
+            opacity: '1'
+          },
+        },
+        'title-glow': {
+          '0%, 100%': { 
+            textShadow: '0 0 20px rgba(251, 191, 36, 0.3)',
+            filter: 'brightness(1)'
+          },
+          '50%': { 
+            textShadow: '0 0 40px rgba(251, 191, 36, 0.6)',
+            filter: 'brightness(1.1)'
+          },
+        },
+      },
+      animation: {
+        'pulse-fast': 'pulse-fast 400ms cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'pulse-glow': 'pulse-glow 500ms cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'scan-line': 'scan-line 800ms linear infinite',
+        'corner-pulse': 'corner-pulse 350ms cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'player-bounce': 'player-bounce 450ms cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'dot-pulse': 'dot-pulse 400ms cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'glow-ring': 'glow-ring 500ms cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'title-glow': 'title-glow 2s ease-in-out infinite',
+      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',

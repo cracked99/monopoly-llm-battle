@@ -115,7 +115,7 @@ export default function MonopolyGame() {
 
           <main 
             data-design-id="board-section" 
-            className="flex justify-center items-center overflow-hidden"
+            className="flex justify-center items-center overflow-hidden min-h-0"
             role="region"
             aria-label="Game board"
           >
@@ -139,7 +139,7 @@ export default function MonopolyGame() {
         </div>
 
         {/* Mobile Layout */}
-        <div className="lg:hidden flex-1 overflow-hidden">
+        <div className="lg:hidden flex-1 overflow-hidden min-h-0">
           <AnimatePresence mode="wait">
             {mobileTab === 'board' && (
               <motion.div
@@ -151,7 +151,7 @@ export default function MonopolyGame() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.2 }}
-                className="h-full p-2 flex items-center justify-center overflow-auto"
+                className="h-full w-full p-1 flex items-center justify-center"
               >
                 <GameBoard />
               </motion.div>

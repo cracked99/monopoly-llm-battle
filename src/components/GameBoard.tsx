@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '@/lib/game-store';
 import { BOARD_SPACES, COLOR_MAP } from '@/lib/board-data';
 import type { BoardSpace } from '@/lib/game-types';
@@ -35,14 +35,141 @@ function getSpaceTypeLabel(type: string): string {
   return labels[type] || type;
 }
 
+function PlayerPositionHighlight({ 
+  players, 
+  currentPlayerId,
+  cellSize 
+}: { 
+  players: { id: string; color: string; emoji: string; name: string }[];
+  currentPlayerId: string | null;
+  cellSize: number;
+}) {
+  const hasCurrentPlayer = players.some(p => p.id === currentPlayerId);
+  const primaryColor = hasCurrentPlayer 
+    ? players.find(p => p.id === currentPlayerId)?.color 
+    : players[0]?.color;
+
+  if (players.length === 0) return null;
+
+  return (
+    <>
+      {/* Animated corner accents - using CSS animations for smooth 60fps */}
+      <div
+        data-design-id="highlight-corner-tl"
+        className="absolute top-0 left-0 pointer-events-none animate-corner-pulse will-change-transform"
+        style={{
+          width: Math.max(cellSize * 0.3, 8),
+          height: Math.max(cellSize * 0.3, 8),
+          borderTop: `2px solid ${primaryColor}`,
+          borderLeft: `2px solid ${primaryColor}`,
+          borderTopLeftRadius: 3,
+          animationDelay: '0ms',
+        }}
+      />
+      <div
+        data-design-id="highlight-corner-tr"
+        className="absolute top-0 right-0 pointer-events-none animate-corner-pulse will-change-transform"
+        style={{
+          width: Math.max(cellSize * 0.3, 8),
+          height: Math.max(cellSize * 0.3, 8),
+          borderTop: `2px solid ${primaryColor}`,
+          borderRight: `2px solid ${primaryColor}`,
+          borderTopRightRadius: 3,
+          animationDelay: '87ms',
+        }}
+      />
+      <div
+        data-design-id="highlight-corner-bl"
+        className="absolute bottom-0 left-0 pointer-events-none animate-corner-pulse will-change-transform"
+        style={{
+          width: Math.max(cellSize * 0.3, 8),
+          height: Math.max(cellSize * 0.3, 8),
+          borderBottom: `2px solid ${primaryColor}`,
+          borderLeft: `2px solid ${primaryColor}`,
+          borderBottomLeftRadius: 3,
+          animationDelay: '175ms',
+        }}
+      />
+      <div
+        data-design-id="highlight-corner-br"
+        className="absolute bottom-0 right-0 pointer-events-none animate-corner-pulse will-change-transform"
+        style={{
+          width: Math.max(cellSize * 0.3, 8),
+          height: Math.max(cellSize * 0.3, 8),
+          borderBottom: `2px solid ${primaryColor}`,
+          borderRight: `2px solid ${primaryColor}`,
+          borderBottomRightRadius: 3,
+          animationDelay: '262ms',
+        }}
+      />
+
+      {/* Glow effect behind the cell - CSS animation */}
+      <div
+        data-design-id="highlight-glow"
+        className={`absolute inset-0 pointer-events-none rounded-sm animate-pulse-glow will-change-[opacity]`}
+        style={{
+          background: `radial-gradient(ellipse at center, ${primaryColor}50 0%, transparent 70%)`,
+        }}
+      />
+
+      {/* Scanning line effect for current player - CSS animation */}
+      {hasCurrentPlayer && (
+        <div
+          data-design-id="highlight-scan"
+          className="absolute left-0 right-0 pointer-events-none animate-scan-line will-change-transform"
+          style={{
+            height: 2,
+            background: `linear-gradient(90deg, transparent 0%, ${primaryColor} 50%, transparent 100%)`,
+          }}
+        />
+      )}
+
+      {/* Pulsing border for current player - CSS animation */}
+      {hasCurrentPlayer && (
+        <div
+          data-design-id="highlight-pulse-border"
+          className="absolute inset-0 pointer-events-none rounded-sm animate-pulse-fast will-change-transform"
+          style={{
+            border: `2px solid ${primaryColor}`,
+          }}
+        />
+      )}
+
+      {/* Multiple player indicator dots - CSS animations */}
+      {players.length > 1 && (
+        <div
+          data-design-id="highlight-multi-indicator"
+          className="absolute top-1 left-1/2 -translate-x-1/2 flex gap-0.5 pointer-events-none"
+        >
+          {players.map((player, idx) => (
+            <div
+              key={player.id}
+              className={`rounded-full will-change-transform ${player.id === currentPlayerId ? 'animate-dot-pulse' : ''}`}
+              style={{
+                width: Math.max(cellSize * 0.08, 3),
+                height: Math.max(cellSize * 0.08, 3),
+                backgroundColor: player.color,
+                boxShadow: player.id === currentPlayerId ? `0 0 4px 1px ${player.color}` : 'none',
+                animationDelay: `${idx * 50}ms`,
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
 function BoardSpaceComponent({ 
   space, 
   playersOnSpace,
+  currentPlayerId,
   property,
   cellSize
 }: { 
   space: BoardSpace; 
   playersOnSpace: { id: string; color: string; emoji: string; name: string }[];
+  currentPlayerId: string | null;
   property?: { owner: string | null; houses: number; hasHotel: boolean; isMortgaged: boolean };
   cellSize: number;
 }) {
@@ -50,6 +177,7 @@ function BoardSpaceComponent({
   const isCorner = space.position % 10 === 0;
   const colorBg = COLOR_MAP[space.color] || 'transparent';
   const cornerSize = cellSize * 1.4;
+  const hasCurrentPlayer = playersOnSpace.some(p => p.id === currentPlayerId);
   
   const getSpaceIcon = () => {
     switch (space.type) {
@@ -91,17 +219,42 @@ function BoardSpaceComponent({
     playersOnSpace.length > 0 ? `, Players: ${playersOnSpace.map(p => p.name).join(', ')}` : ''
   }${ownerPlayer ? `, owned by ${ownerPlayer.name}` : ''}${
     property?.houses ? `, ${property.houses} houses` : ''
-  }${property?.hasHotel ? ', has hotel' : ''}${property?.isMortgaged ? ', mortgaged' : ''}`;
+  }${property?.hasHotel ? ', has hotel' : ''}${property?.isMortgaged ? ', mortgaged' : ''}${
+    hasCurrentPlayer ? ', current player here' : ''
+  }`;
 
+  const currentPlayerColor = playersOnSpace.find(p => p.id === currentPlayerId)?.color || '#ffffff';
+  
   return (
     <div
       data-design-id={`board-space-${space.position}`}
       role="gridcell"
       aria-label={accessibleLabel}
       tabIndex={0}
-      className="relative border border-zinc-700/50 bg-zinc-900/80 overflow-hidden flex flex-col transition-all duration-200 hover:z-10 hover:scale-105 hover:shadow-lg hover:shadow-amber-500/20 focus:z-20 focus:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:shadow-lg focus:shadow-amber-500/30"
-      style={gridStyles}
+      className={`relative border overflow-hidden flex flex-col transition-all duration-200 hover:z-10 hover:scale-105 hover:shadow-lg focus:z-20 focus:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:shadow-lg focus:shadow-amber-500/30 ${
+        playersOnSpace.length > 0 
+          ? 'border-white/30 bg-zinc-800/90 z-5' 
+          : 'border-zinc-700/50 bg-zinc-900/80'
+      } ${hasCurrentPlayer ? 'z-10 animate-glow-ring will-change-[box-shadow]' : ''}`}
+      style={{
+        ...gridStyles,
+        '--glow-color': currentPlayerColor,
+        boxShadow: !hasCurrentPlayer && playersOnSpace.length > 0 
+          ? `0 0 10px 2px ${playersOnSpace[0]?.color}50` 
+          : undefined,
+      } as React.CSSProperties}
     >
+      {/* Animated highlight overlay for player positions */}
+      <AnimatePresence>
+        {playersOnSpace.length > 0 && (
+          <PlayerPositionHighlight 
+            players={playersOnSpace} 
+            currentPlayerId={currentPlayerId}
+            cellSize={cellSize}
+          />
+        )}
+      </AnimatePresence>
+
       <div className={`w-full h-full flex flex-col ${getRotation()}`}>
         {space.color !== 'none' && space.type === 'property' && (
           <div 
@@ -162,30 +315,34 @@ function BoardSpaceComponent({
       </div>
 
       {playersOnSpace.length > 0 && (
-        <div className="absolute bottom-0.5 right-0.5 flex flex-wrap gap-0.5 max-w-[80%] justify-end" aria-hidden="true">
+        <div className="absolute bottom-0.5 right-0.5 flex flex-wrap gap-0.5 max-w-[80%] justify-end z-10" aria-hidden="true">
           {playersOnSpace.map((player) => (
-            <motion.div
+            <div
               key={player.id}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="rounded-full border border-white/50 flex items-center justify-center shadow-lg"
+              className={`rounded-full border-2 flex items-center justify-center shadow-lg will-change-transform ${
+                player.id === currentPlayerId ? 'animate-player-bounce' : ''
+              }`}
               style={{ 
                 backgroundColor: player.color,
-                width: Math.max(cellSize * 0.28, 8),
-                height: Math.max(cellSize * 0.28, 8),
-                fontSize: Math.max(cellSize * 0.16, 5)
+                borderColor: player.id === currentPlayerId ? '#ffffff' : 'rgba(255,255,255,0.5)',
+                width: Math.max(cellSize * 0.32, 10),
+                height: Math.max(cellSize * 0.32, 10),
+                fontSize: Math.max(cellSize * 0.18, 6),
+                boxShadow: player.id === currentPlayerId 
+                  ? `0 0 8px 2px ${player.color}, 0 0 2px 1px white`
+                  : `0 2px 4px rgba(0,0,0,0.3)`,
               }}
               title={player.name}
             >
               {player.emoji.charAt(0)}
-            </motion.div>
+            </div>
           ))}
         </div>
       )}
 
       {ownerPlayer && (
         <div 
-          className="absolute top-0.5 right-0.5 rounded-full border border-white/30"
+          className="absolute top-0.5 right-0.5 rounded-full border border-white/30 animate-pulse will-change-transform"
           style={{ 
             backgroundColor: ownerPlayer.color,
             width: Math.max(cellSize * 0.16, 4),
@@ -202,42 +359,55 @@ function BoardSpaceComponent({
 export default function GameBoard() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState(40);
-  const { players, properties } = useGameStore();
+  const { players, properties, currentPlayerIndex, gamePhase } = useGameStore();
+  
+  const currentPlayer = gamePhase === 'playing' ? players[currentPlayerIndex] : null;
 
   useEffect(() => {
     const calculateSize = () => {
       if (!containerRef.current) return;
       
       const container = containerRef.current;
-      const parentWidth = container.parentElement?.clientWidth || window.innerWidth;
-      const parentHeight = window.innerHeight * 0.7;
+      const parent = container.parentElement;
       
-      const availableWidth = Math.min(parentWidth - 16, 800);
-      const availableHeight = parentHeight - 16;
+      const parentWidth = parent?.clientWidth || window.innerWidth;
+      const parentHeight = parent?.clientHeight || window.innerHeight;
+      
+      const padding = 8;
+      const availableWidth = parentWidth - padding * 2;
+      const availableHeight = parentHeight - padding * 2;
       
       const cornerRatio = 1.4;
-      const regularRatio = 1.0;
-      const totalCols = 2 * cornerRatio + 9 * regularRatio;
-      const totalRows = 2 * cornerRatio + 9 * regularRatio * 1.4;
+      const totalCols = 2 * cornerRatio + 9;
+      const totalRows = 2 * cornerRatio + 9 * 1.4;
       
       const cellFromWidth = availableWidth / totalCols;
       const cellFromHeight = availableHeight / totalRows;
       
       const optimalSize = Math.min(cellFromWidth, cellFromHeight);
-      const finalSize = Math.max(Math.min(optimalSize, 56), 20);
+      const finalSize = Math.max(Math.min(optimalSize, 70), 16);
       
       setCellSize(finalSize);
     };
 
     calculateSize();
     
-    const resizeObserver = new ResizeObserver(calculateSize);
+    const resizeObserver = new ResizeObserver(() => {
+      requestAnimationFrame(calculateSize);
+    });
+    
     if (containerRef.current?.parentElement) {
       resizeObserver.observe(containerRef.current.parentElement);
     }
     
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+    
     window.addEventListener('resize', calculateSize);
-    window.addEventListener('orientationchange', calculateSize);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(calculateSize, 100);
+    });
     
     return () => {
       resizeObserver.disconnect();
@@ -264,7 +434,7 @@ export default function GameBoard() {
     <div 
       ref={containerRef}
       data-design-id="game-board-container" 
-      className="relative w-full flex justify-center"
+      className="relative w-full h-full flex items-center justify-center"
       role="region"
       aria-label="Monopoly Game Board"
     >
@@ -283,6 +453,7 @@ export default function GameBoard() {
             key={space.position}
             space={space}
             playersOnSpace={getPlayersOnSpace(space.position)}
+            currentPlayerId={currentPlayer?.id || null}
             property={getPropertyInfo(space.position)}
             cellSize={cellSize}
           />
@@ -295,17 +466,13 @@ export default function GameBoard() {
           aria-label="Monopoly LLM Battle Arena"
         >
           <div data-design-id="board-center-content" className="text-center p-2 sm:p-4">
-            <motion.h1 
+            <h1 
               data-design-id="board-title"
-              className="font-black tracking-wider bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-2xl"
+              className="font-black tracking-wider bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-2xl animate-title-glow will-change-[filter,text-shadow]"
               style={{ fontSize: Math.max(cellSize * 0.6, 16) }}
-              animate={{ 
-                textShadow: ['0 0 20px rgba(251, 191, 36, 0.3)', '0 0 40px rgba(251, 191, 36, 0.5)', '0 0 20px rgba(251, 191, 36, 0.3)']
-              }}
-              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
             >
               MONOPOLY
-            </motion.h1>
+            </h1>
             <p 
               data-design-id="board-subtitle" 
               className="text-amber-500/70 mt-0.5 font-medium tracking-widest"
