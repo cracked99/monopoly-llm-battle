@@ -21,8 +21,8 @@ export default function GameSetup() {
   const [apiKey, setApiKey] = useState('');
   const [hasServerKey, setHasServerKey] = useState(false);
   const [playerConfigs, setPlayerConfigs] = useState<PlayerConfig[]>([
-    { name: 'Claude', isAI: true, llmModel: 'anthropic/claude-3.5-sonnet' },
-    { name: 'GPT-4o', isAI: true, llmModel: 'openai/gpt-4o' },
+    { name: 'Claude', isAI: true, llmModel: 'anthropic/claude-sonnet-4' },
+    { name: 'GPT-4.1', isAI: true, llmModel: 'openai/gpt-4.1' },
   ]);
   const [error, setError] = useState('');
 
@@ -226,10 +226,21 @@ export default function GameSetup() {
                           aria-label={`AI model for player ${index + 1}`}
                           className="w-full h-8 sm:h-9 text-[10px] sm:text-xs bg-zinc-700 border border-zinc-600 rounded-md text-zinc-100 px-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
                         >
-                          {LLM_MODELS.map((model) => (
-                            <option key={model.id} value={model.id}>
-                              {model.name}
-                            </option>
+                          {Object.entries(
+                            LLM_MODELS.reduce((groups, model) => {
+                              const provider = model.provider || 'Other';
+                              if (!groups[provider]) groups[provider] = [];
+                              groups[provider].push(model);
+                              return groups;
+                            }, {} as Record<string, typeof LLM_MODELS>)
+                          ).map(([provider, models]) => (
+                            <optgroup key={provider} label={`── ${provider} ──`}>
+                              {models.map((model) => (
+                                <option key={model.id} value={model.id}>
+                                  {model.name}
+                                </option>
+                              ))}
+                            </optgroup>
                           ))}
                         </select>
                       )}
@@ -308,9 +319,9 @@ export default function GameSetup() {
               </Badge>
               <Badge 
                 variant="outline" 
-                className="text-[10px] sm:text-xs border-zinc-600 text-zinc-400"
+                className="text-[10px] sm:text-xs border-cyan-600 text-cyan-400"
               >
-                🤖 AI vs AI Battles
+                🤖 {LLM_MODELS.length} AI Models
               </Badge>
             </div>
           </CardContent>

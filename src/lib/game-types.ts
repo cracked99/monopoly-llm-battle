@@ -156,10 +156,61 @@ export const PLAYER_COLORS = [
 ];
 
 export const LLM_MODELS = [
-  { id: 'anthropic/claude-3.5-sonnet', name: 'Claude 3.5 Sonnet' },
-  { id: 'openai/gpt-4o', name: 'GPT-4o' },
-  { id: 'openai/gpt-4o-mini', name: 'GPT-4o Mini' },
-  { id: 'google/gemini-pro-1.5', name: 'Gemini Pro 1.5' },
-  { id: 'meta-llama/llama-3.1-70b-instruct', name: 'Llama 3.1 70B' },
-  { id: 'mistralai/mistral-large', name: 'Mistral Large' },
+  // Anthropic
+  { id: 'anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'Anthropic' },
+  { id: 'anthropic/claude-opus-4', name: 'Claude Opus 4', provider: 'Anthropic' },
+  { id: 'anthropic/claude-haiku-4.5', name: 'Claude Haiku 4.5', provider: 'Anthropic' },
+  { id: 'anthropic/claude-3.5-sonnet', name: 'Claude 3.5 Sonnet', provider: 'Anthropic' },
+  
+  // OpenAI
+  { id: 'openai/gpt-4.1', name: 'GPT-4.1', provider: 'OpenAI' },
+  { id: 'openai/gpt-4.1-mini', name: 'GPT-4.1 Mini', provider: 'OpenAI' },
+  { id: 'openai/gpt-4o', name: 'GPT-4o', provider: 'OpenAI' },
+  { id: 'openai/gpt-4o-mini', name: 'GPT-4o Mini', provider: 'OpenAI' },
+  { id: 'openai/gpt-4-turbo', name: 'GPT-4 Turbo', provider: 'OpenAI' },
+  
+  // Google
+  { id: 'google/gemini-2.5-pro', name: 'Gemini 2.5 Pro', provider: 'Google' },
+  { id: 'google/gemini-2.5-flash', name: 'Gemini 2.5 Flash', provider: 'Google' },
+  { id: 'google/gemini-pro-1.5', name: 'Gemini Pro 1.5', provider: 'Google' },
+  
+  // DeepSeek
+  { id: 'deepseek/deepseek-v3.2', name: 'DeepSeek V3.2', provider: 'DeepSeek' },
+  { id: 'deepseek/deepseek-v3.1', name: 'DeepSeek V3.1', provider: 'DeepSeek' },
+  { id: 'deepseek/deepseek-r1', name: 'DeepSeek R1', provider: 'DeepSeek' },
+  
+  // xAI Grok
+  { id: 'x-ai/grok-3', name: 'Grok 3', provider: 'xAI' },
+  { id: 'x-ai/grok-3-mini', name: 'Grok 3 Mini', provider: 'xAI' },
+  
+  // Qwen
+  { id: 'qwen/qwen3-max', name: 'Qwen3 Max', provider: 'Qwen' },
+  { id: 'qwen/qwen3-235b-a22b-instruct', name: 'Qwen3 235B', provider: 'Qwen' },
+  { id: 'qwen/qwen3-32b', name: 'Qwen3 32B', provider: 'Qwen' },
+  
+  // Mistral
+  { id: 'mistralai/mistral-large-2512', name: 'Mistral Large', provider: 'Mistral' },
+  { id: 'mistralai/mistral-small-3.2-24b-instruct', name: 'Mistral Small 3.2', provider: 'Mistral' },
+  
+  // Meta Llama
+  { id: 'meta-llama/llama-3.1-70b-instruct', name: 'Llama 3.1 70B', provider: 'Meta' },
+  { id: 'meta-llama/llama-3.3-70b-instruct', name: 'Llama 3.3 70B', provider: 'Meta' },
+  
+  // NVIDIA
+  { id: 'nvidia/llama-3.3-nemotron-super-49b-v1.5', name: 'Nemotron Super 49B', provider: 'NVIDIA' },
+  { id: 'nvidia/llama-3.1-nemotron-ultra-253b-v1', name: 'Nemotron Ultra 253B', provider: 'NVIDIA' },
+  
+  // Moonshot
+  { id: 'moonshotai/kimi-k2', name: 'Kimi K2', provider: 'Moonshot' },
+  
+  // Amazon
+  { id: 'amazon/nova-premier-v1', name: 'Nova Premier', provider: 'Amazon' },
+  { id: 'amazon/nova-lite-v1', name: 'Nova Lite', provider: 'Amazon' },
+  
+  // MiniMax
+  { id: 'minimax/minimax-m2', name: 'MiniMax M2', provider: 'MiniMax' },
+  
+  // Cohere
+  { id: 'cohere/command-r-plus', name: 'Command R+', provider: 'Cohere' },
+  { id: 'cohere/command-r7b-12-2024', name: 'Command R7B', provider: 'Cohere' },
 ];
