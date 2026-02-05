@@ -96,12 +96,14 @@ export async function getLLMDecision(
 ): Promise<LLMDecision> {
   const context = buildGameContext(state);
   
+  const actualApiKey = apiKey === 'server' ? undefined : apiKey;
+  
   try {
     const response = await fetch('/api/llm', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        apiKey,
+        apiKey: actualApiKey,
         model: model || 'openai/gpt-4o-mini',
         messages: [
           { role: 'system', content: buildSystemPrompt() },
