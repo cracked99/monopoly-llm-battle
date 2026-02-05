@@ -704,38 +704,66 @@ export default function GameControls() {
   const isInJail = currentPlayer?.inJail && pendingAction === 'none' && !isProcessing;
 
   return (
-    <div data-design-id="game-controls" className="space-y-4">
+    <div 
+      data-design-id="game-controls" 
+      className="space-y-3 sm:space-y-4"
+      role="region"
+      aria-label="Game controls"
+    >
       <Card data-design-id="turn-info-card" className="bg-zinc-900/90 border-zinc-700">
-        <CardHeader className="p-3 pb-2">
+        <CardHeader className="p-2 sm:p-3 pb-1 sm:pb-2">
           <div className="flex justify-between items-center">
-            <CardTitle data-design-id="turn-info-title" className="text-sm text-zinc-300">Turn {turnNumber}</CardTitle>
-            <Badge data-design-id="game-phase-badge" variant="outline" className="text-[10px]">
+            <CardTitle 
+              data-design-id="turn-info-title" 
+              className="text-xs sm:text-sm text-zinc-300"
+              aria-label={`Turn number ${turnNumber}`}
+            >
+              Turn {turnNumber}
+            </CardTitle>
+            <Badge 
+              data-design-id="game-phase-badge" 
+              variant="outline" 
+              className="text-[9px] sm:text-[10px]"
+              aria-label={`Game phase: ${gamePhase}`}
+            >
               {gamePhase.toUpperCase()}
             </Badge>
           </div>
         </CardHeader>
-        <CardContent className="p-3 pt-0">
+        <CardContent className="p-2 sm:p-3 pt-0">
           {currentPlayer && (
-            <div data-design-id="current-player-info" className="space-y-2">
+            <div data-design-id="current-player-info" className="space-y-1.5 sm:space-y-2">
               <div className="flex items-center gap-2">
                 <div 
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-sm"
+                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs sm:text-sm shrink-0"
                   style={{ backgroundColor: currentPlayer.color }}
+                  aria-hidden="true"
                 >
                   {currentPlayer.emoji.charAt(0)}
                 </div>
-                <span className="font-semibold text-zinc-100">{currentPlayer.name}</span>
+                <span className="font-semibold text-zinc-100 text-sm sm:text-base truncate">
+                  {currentPlayer.name}
+                </span>
                 {currentPlayer.isAI && (
-                  <Badge className="text-[10px] bg-cyan-600">AI</Badge>
+                  <Badge className="text-[9px] sm:text-[10px] bg-cyan-600 shrink-0">AI</Badge>
                 )}
               </div>
               
-              <div data-design-id="player-position-info" className="text-xs text-zinc-400">
+              <div 
+                data-design-id="player-position-info" 
+                className="text-[10px] sm:text-xs text-zinc-400"
+                aria-label={`Current position: ${currentSpace?.name}`}
+              >
                 Position: {currentSpace?.name}
               </div>
 
               {lastDiceRoll && (
-                <div data-design-id="last-roll-info" className="text-xs text-zinc-400">
+                <div 
+                  data-design-id="last-roll-info" 
+                  className="text-[10px] sm:text-xs text-zinc-400"
+                  role="status"
+                  aria-live="polite"
+                >
                   Last Roll: {lastDiceRoll.die1} + {lastDiceRoll.die2} = {lastDiceRoll.die1 + lastDiceRoll.die2}
                   {lastDiceRoll.isDoubles && <span className="text-amber-400 ml-1">(Doubles!)</span>}
                 </div>
@@ -752,15 +780,19 @@ export default function GameControls() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
+            role="status"
+            aria-live="polite"
+            aria-label={`AI is thinking: ${aiThinking}`}
           >
             <Card className="bg-cyan-950/50 border-cyan-700">
-              <CardContent className="p-3 flex items-center gap-2">
+              <CardContent className="p-2 sm:p-3 flex items-center gap-2">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }}
-                  className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full"
+                  className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-cyan-400 border-t-transparent rounded-full shrink-0"
+                  aria-hidden="true"
                 />
-                <span className="text-sm text-cyan-300">{aiThinking}</span>
+                <span className="text-xs sm:text-sm text-cyan-300">{aiThinking}</span>
               </CardContent>
             </Card>
           </motion.div>
@@ -769,10 +801,10 @@ export default function GameControls() {
 
       {lastDecision && (
         <Card data-design-id="last-decision-card" className="bg-zinc-800/50 border-zinc-600">
-          <CardContent className="p-3">
-            <div className="text-xs text-zinc-400">Last AI Decision:</div>
-            <div className="text-sm text-zinc-200 font-medium">{lastDecision.action}</div>
-            <div className="text-xs text-zinc-400 italic">"{lastDecision.reasoning}"</div>
+          <CardContent className="p-2 sm:p-3">
+            <div className="text-[10px] sm:text-xs text-zinc-400">Last AI Decision:</div>
+            <div className="text-xs sm:text-sm text-zinc-200 font-medium">{lastDecision.action}</div>
+            <div className="text-[10px] sm:text-xs text-zinc-400 italic truncate">"{lastDecision.reasoning}"</div>
           </CardContent>
         </Card>
       )}
@@ -783,7 +815,8 @@ export default function GameControls() {
             data-design-id="roll-dice-button"
             onClick={handleRollDice}
             disabled={isProcessing}
-            className="w-full bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-black font-bold py-6 text-lg shadow-lg shadow-amber-500/30"
+            aria-label="Roll dice"
+            className="w-full bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-black font-bold py-4 sm:py-6 text-base sm:text-lg shadow-lg shadow-amber-500/30 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-amber-400 active:scale-[0.98] transition-transform touch-manipulation"
           >
             🎲 Roll Dice
           </Button>
@@ -794,7 +827,8 @@ export default function GameControls() {
             data-design-id="jail-turn-button"
             onClick={handleJailTurn}
             disabled={isProcessing}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white font-bold py-6"
+            aria-label="Take jail turn"
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white font-bold py-4 sm:py-6 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-purple-400 active:scale-[0.98] transition-transform touch-manipulation"
           >
             🔒 Take Jail Turn
           </Button>
@@ -804,14 +838,16 @@ export default function GameControls() {
           <div data-design-id="buy-decision-buttons" className="grid grid-cols-2 gap-2">
             <Button 
               onClick={() => handleManualAction('buy')}
-              className="bg-emerald-600 hover:bg-emerald-500"
+              aria-label="Buy property"
+              className="bg-emerald-600 hover:bg-emerald-500 py-3 sm:py-4 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-400 active:scale-[0.98] transition-transform touch-manipulation"
             >
               Buy Property
             </Button>
             <Button 
               onClick={() => handleManualAction('auction')}
               variant="outline"
-              className="border-zinc-600"
+              aria-label="Start auction"
+              className="border-zinc-600 py-3 sm:py-4 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] transition-transform touch-manipulation"
             >
               Auction
             </Button>
@@ -819,12 +855,22 @@ export default function GameControls() {
         )}
 
         {pendingAction === 'auction' && auctionState && (
-          <Card data-design-id="auction-card" className="bg-amber-950/50 border-amber-700">
-            <CardContent className="p-3">
+          <Card 
+            data-design-id="auction-card" 
+            className="bg-amber-950/50 border-amber-700"
+            role="status"
+            aria-live="polite"
+          >
+            <CardContent className="p-2 sm:p-3">
               <div className="text-center">
-                <div className="text-sm text-amber-300">Auction in Progress</div>
-                <div className="text-2xl font-bold text-amber-400">${auctionState.currentBid}</div>
-                <div className="text-xs text-zinc-400">
+                <div className="text-xs sm:text-sm text-amber-300">Auction in Progress</div>
+                <div 
+                  className="text-xl sm:text-2xl font-bold text-amber-400"
+                  aria-label={`Current bid: $${auctionState.currentBid}`}
+                >
+                  ${auctionState.currentBid}
+                </div>
+                <div className="text-[10px] sm:text-xs text-zinc-400">
                   {auctionState.highestBidder 
                     ? `Leading: ${players.find(p => p.id === auctionState.highestBidder)?.name}`
                     : 'No bids yet'}
@@ -836,20 +882,33 @@ export default function GameControls() {
       </div>
 
       <Card data-design-id="auto-play-card" className="bg-zinc-900/90 border-zinc-700">
-        <CardContent className="p-3 space-y-3">
+        <CardContent className="p-2 sm:p-3 space-y-2 sm:space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-zinc-300">Auto-Play</span>
+            <label 
+              htmlFor="auto-play-switch" 
+              className="text-xs sm:text-sm text-zinc-300 cursor-pointer"
+            >
+              Auto-Play
+            </label>
             <Switch
+              id="auto-play-switch"
               data-design-id="auto-play-switch"
               checked={autoPlay}
               onCheckedChange={setAutoPlay}
               className="data-[state=checked]:bg-emerald-600"
+              aria-label={`Auto-play is ${autoPlay ? 'on' : 'off'}`}
             />
           </div>
           {autoPlay && (
             <div className="space-y-1">
-              <span className="text-xs text-zinc-400">Speed: {gameSpeed}ms</span>
+              <label 
+                htmlFor="speed-slider"
+                className="text-[10px] sm:text-xs text-zinc-400 block"
+              >
+                Speed: {gameSpeed}ms {gameSpeed < 1000 ? '(Fast)' : gameSpeed > 2000 ? '(Slow)' : '(Normal)'}
+              </label>
               <input
+                id="speed-slider"
                 data-design-id="speed-slider"
                 type="range"
                 min={500}
@@ -857,7 +916,11 @@ export default function GameControls() {
                 step={100}
                 value={gameSpeed}
                 onChange={(e) => setGameSpeed(Number(e.target.value))}
-                className="w-full h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                aria-label={`Game speed: ${gameSpeed} milliseconds`}
+                aria-valuemin={500}
+                aria-valuemax={3000}
+                aria-valuenow={gameSpeed}
+                className="w-full h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-amber-500 touch-manipulation"
               />
             </div>
           )}
@@ -865,18 +928,26 @@ export default function GameControls() {
       </Card>
 
       <Card data-design-id="game-log-card" className="bg-zinc-900/90 border-zinc-700">
-        <CardHeader className="p-3 pb-2">
-          <CardTitle data-design-id="game-log-title" className="text-sm text-zinc-300">Game Log</CardTitle>
+        <CardHeader className="p-2 sm:p-3 pb-1 sm:pb-2">
+          <CardTitle data-design-id="game-log-title" className="text-xs sm:text-sm text-zinc-300">
+            Game Log
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <ScrollArea className="h-48">
-            <div data-design-id="game-log-entries" className="p-3 space-y-1">
+          <ScrollArea className="h-32 sm:h-48">
+            <div 
+              data-design-id="game-log-entries" 
+              className="p-2 sm:p-3 space-y-1"
+              role="log"
+              aria-label="Game event log"
+              aria-live="polite"
+            >
               {gameLog.slice().reverse().map((entry, idx) => (
                 <motion.div
                   key={`${entry.timestamp}-${idx}`}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="text-xs text-zinc-400 border-l-2 border-zinc-700 pl-2"
+                  className="text-[10px] sm:text-xs text-zinc-400 border-l-2 border-zinc-700 pl-2"
                 >
                   <span className="text-zinc-500 mr-1">[T{entry.turn}]</span>
                   {entry.message}

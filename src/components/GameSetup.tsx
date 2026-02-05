@@ -81,7 +81,12 @@ export default function GameSetup() {
   };
 
   return (
-    <div data-design-id="game-setup-container" className="min-h-screen bg-gradient-to-br from-zinc-950 via-emerald-950/20 to-zinc-950 flex items-center justify-center p-4">
+    <div 
+      data-design-id="game-setup-container" 
+      className="min-h-screen min-h-[100dvh] bg-gradient-to-br from-zinc-950 via-emerald-950/20 to-zinc-950 flex items-center justify-center p-3 sm:p-4"
+      role="main"
+      aria-label="Game setup"
+    >
       <motion.div
         data-design-id="setup-card-wrapper"
         initial={{ opacity: 0, scale: 0.9 }}
@@ -89,7 +94,7 @@ export default function GameSetup() {
         className="w-full max-w-2xl"
       >
         <Card data-design-id="setup-card" className="bg-zinc-900/95 border-amber-600/30 shadow-2xl shadow-amber-500/10">
-          <CardHeader data-design-id="setup-header" className="text-center space-y-2">
+          <CardHeader data-design-id="setup-header" className="text-center space-y-2 p-4 sm:p-6">
             <motion.div
               initial={{ y: -20 }}
               animate={{ y: 0 }}
@@ -97,44 +102,53 @@ export default function GameSetup() {
             >
               <CardTitle 
                 data-design-id="setup-title"
-                className="text-4xl md:text-5xl font-black tracking-wider bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 bg-clip-text text-transparent"
+                className="text-3xl sm:text-4xl md:text-5xl font-black tracking-wider bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 bg-clip-text text-transparent"
               >
                 MONOPOLY
               </CardTitle>
               <CardDescription 
                 data-design-id="setup-subtitle"
-                className="text-amber-500/70 text-sm tracking-widest mt-1"
+                className="text-amber-500/70 text-xs sm:text-sm tracking-widest mt-1"
               >
                 LLM BATTLE ARENA
               </CardDescription>
             </motion.div>
-            <p data-design-id="setup-description" className="text-zinc-400 text-sm mt-4">
+            <p data-design-id="setup-description" className="text-zinc-400 text-xs sm:text-sm mt-4 px-2">
               Watch AI models compete in the classic game of Monopoly!
               Configure your players and let the battle begin.
             </p>
           </CardHeader>
 
-          <CardContent data-design-id="setup-content" className="space-y-6">
+          <CardContent data-design-id="setup-content" className="space-y-4 sm:space-y-6 p-4 sm:p-6 pt-0 sm:pt-0">
             <div data-design-id="api-key-section" className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-zinc-300">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <label 
+                  htmlFor="api-key-input"
+                  className="text-xs sm:text-sm font-medium text-zinc-300"
+                >
                   OpenRouter API Key
                 </label>
                 {hasServerKey && (
-                  <Badge data-design-id="server-key-badge" className="bg-emerald-600 text-white text-[10px]">
+                  <Badge 
+                    data-design-id="server-key-badge" 
+                    className="bg-emerald-600 text-white text-[9px] sm:text-[10px]"
+                    aria-label="Server API key is configured"
+                  >
                     ✓ Server Key Configured
                   </Badge>
                 )}
               </div>
               <Input
+                id="api-key-input"
                 data-design-id="api-key-input"
                 type="password"
                 placeholder={hasServerKey ? 'Using server key (optional override)' : 'sk-or-v1-...'}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500"
+                className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 h-10 sm:h-11 text-sm"
+                aria-describedby="api-key-help"
               />
-              <p className="text-xs text-zinc-500">
+              <p id="api-key-help" className="text-[10px] sm:text-xs text-zinc-500">
                 {hasServerKey ? 'Server API key is configured. You can optionally enter a different key.' : (
                   <>
                     Get your API key from{' '}
@@ -142,7 +156,7 @@ export default function GameSetup() {
                       href="https://openrouter.ai/keys" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-cyan-400 hover:underline"
+                      className="text-cyan-400 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded"
                     >
                       openrouter.ai/keys
                     </a>
@@ -153,18 +167,20 @@ export default function GameSetup() {
 
             <Separator className="bg-zinc-700/50" />
 
-            <div data-design-id="players-section" className="space-y-3">
-              <div className="flex justify-between items-center">
-                <label className="text-sm font-medium text-zinc-300">
+            <fieldset data-design-id="players-section" className="space-y-3">
+              <legend className="sr-only">Configure players</legend>
+              <div className="flex justify-between items-center flex-wrap gap-2">
+                <span className="text-xs sm:text-sm font-medium text-zinc-300">
                   Players ({playerConfigs.length}/6)
-                </label>
+                </span>
                 <Button
                   data-design-id="add-player-button"
                   variant="outline"
                   size="sm"
                   onClick={addPlayer}
                   disabled={playerConfigs.length >= 6}
-                  className="border-zinc-600 text-zinc-300 hover:bg-zinc-800"
+                  aria-label={`Add player. Currently ${playerConfigs.length} of 6 players`}
+                  className="border-zinc-600 text-zinc-300 hover:bg-zinc-800 text-xs sm:text-sm h-8 sm:h-9 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-amber-400"
                 >
                   + Add Player
                 </Button>
@@ -179,23 +195,27 @@ export default function GameSetup() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
-                    className="flex items-center gap-3 p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/50"
+                    className="flex items-start sm:items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/50"
+                    role="group"
+                    aria-label={`Player ${index + 1} configuration`}
                   >
                     <div 
                       data-design-id={`player-color-indicator-${index}`}
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-lg border-2 border-white/20 shrink-0"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-base sm:text-lg border-2 border-white/20 shrink-0 mt-1 sm:mt-0"
                       style={{ backgroundColor: PLAYER_COLORS[index % PLAYER_COLORS.length].color }}
+                      aria-hidden="true"
                     >
                       {PLAYER_COLORS[index % PLAYER_COLORS.length].emoji.charAt(0)}
                     </div>
 
-                    <div className="flex-1 space-y-2">
+                    <div className="flex-1 space-y-2 min-w-0">
                       <Input
                         data-design-id={`player-name-input-${index}`}
                         placeholder="Player Name"
                         value={config.name}
                         onChange={(e) => updatePlayer(index, { name: e.target.value })}
-                        className="h-8 text-sm bg-zinc-700 border-zinc-600 text-zinc-100"
+                        aria-label={`Player ${index + 1} name`}
+                        className="h-8 sm:h-9 text-xs sm:text-sm bg-zinc-700 border-zinc-600 text-zinc-100"
                       />
                       
                       {config.isAI && (
@@ -203,7 +223,8 @@ export default function GameSetup() {
                           data-design-id={`player-model-select-${index}`}
                           value={config.llmModel}
                           onChange={(e) => updatePlayer(index, { llmModel: e.target.value })}
-                          className="w-full h-8 text-xs bg-zinc-700 border border-zinc-600 rounded-md text-zinc-100 px-2"
+                          aria-label={`AI model for player ${index + 1}`}
+                          className="w-full h-8 sm:h-9 text-[10px] sm:text-xs bg-zinc-700 border border-zinc-600 rounded-md text-zinc-100 px-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
                         >
                           {LLM_MODELS.map((model) => (
                             <option key={model.id} value={model.id}>
@@ -214,14 +235,21 @@ export default function GameSetup() {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                       <div className="flex items-center gap-1">
-                        <span className="text-xs text-zinc-400">AI</span>
+                        <label 
+                          htmlFor={`ai-switch-${index}`}
+                          className="text-[10px] sm:text-xs text-zinc-400 cursor-pointer"
+                        >
+                          AI
+                        </label>
                         <Switch
+                          id={`ai-switch-${index}`}
                           data-design-id={`player-ai-switch-${index}`}
                           checked={config.isAI}
                           onCheckedChange={(checked) => updatePlayer(index, { isAI: checked })}
                           className="data-[state=checked]:bg-cyan-600"
+                          aria-label={`Toggle AI for player ${index + 1}`}
                         />
                       </div>
                       
@@ -231,7 +259,8 @@ export default function GameSetup() {
                           variant="ghost"
                           size="sm"
                           onClick={() => removePlayer(index)}
-                          className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                          aria-label={`Remove player ${config.name || index + 1}`}
+                          className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-900/20 focus-visible:ring-2 focus-visible:ring-red-400"
                         >
                           ✕
                         </Button>
@@ -240,14 +269,16 @@ export default function GameSetup() {
                   </motion.div>
                 ))}
               </AnimatePresence>
-            </div>
+            </fieldset>
 
             {error && (
               <motion.div
                 data-design-id="error-message"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-3 bg-red-900/30 border border-red-700/50 rounded-lg text-red-300 text-sm"
+                role="alert"
+                aria-live="assertive"
+                className="p-2 sm:p-3 bg-red-900/30 border border-red-700/50 rounded-lg text-red-300 text-xs sm:text-sm"
               >
                 {error}
               </motion.div>
@@ -256,19 +287,29 @@ export default function GameSetup() {
             <Button
               data-design-id="start-game-button"
               onClick={startGame}
-              className="w-full bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-black font-bold py-6 text-lg shadow-lg shadow-amber-500/30"
+              aria-label="Start the game"
+              className="w-full bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-black font-bold py-4 sm:py-6 text-base sm:text-lg shadow-lg shadow-amber-500/30 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-amber-400 active:scale-[0.98] transition-transform touch-manipulation"
             >
               🎲 Start Battle
             </Button>
 
-            <div data-design-id="info-badges" className="flex flex-wrap gap-2 justify-center">
-              <Badge variant="outline" className="text-xs border-zinc-600 text-zinc-400">
+            <div data-design-id="info-badges" className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
+              <Badge 
+                variant="outline" 
+                className="text-[10px] sm:text-xs border-zinc-600 text-zinc-400"
+              >
                 💰 Starting Cash: $1,500
               </Badge>
-              <Badge variant="outline" className="text-xs border-zinc-600 text-zinc-400">
+              <Badge 
+                variant="outline" 
+                className="text-[10px] sm:text-xs border-zinc-600 text-zinc-400"
+              >
                 🏠 Full Property Set
               </Badge>
-              <Badge variant="outline" className="text-xs border-zinc-600 text-zinc-400">
+              <Badge 
+                variant="outline" 
+                className="text-[10px] sm:text-xs border-zinc-600 text-zinc-400"
+              >
                 🤖 AI vs AI Battles
               </Badge>
             </div>
