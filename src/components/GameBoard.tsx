@@ -53,89 +53,46 @@ function PlayerPositionHighlight({
 
   return (
     <>
-      {/* Animated corner accents - using CSS animations for smooth 60fps */}
+      {/* Smooth outer glow - organic breathing effect */}
       <div
-        data-design-id="highlight-corner-tl"
-        className="absolute top-0 left-0 pointer-events-none animate-corner-pulse will-change-transform"
+        data-design-id="highlight-outer-glow"
+        className="absolute -inset-1 pointer-events-none rounded-md animate-breathe-glow will-change-[opacity,transform]"
         style={{
-          width: Math.max(cellSize * 0.3, 8),
-          height: Math.max(cellSize * 0.3, 8),
-          borderTop: `2px solid ${primaryColor}`,
-          borderLeft: `2px solid ${primaryColor}`,
-          borderTopLeftRadius: 3,
-          animationDelay: '0ms',
-        }}
-      />
-      <div
-        data-design-id="highlight-corner-tr"
-        className="absolute top-0 right-0 pointer-events-none animate-corner-pulse will-change-transform"
-        style={{
-          width: Math.max(cellSize * 0.3, 8),
-          height: Math.max(cellSize * 0.3, 8),
-          borderTop: `2px solid ${primaryColor}`,
-          borderRight: `2px solid ${primaryColor}`,
-          borderTopRightRadius: 3,
-          animationDelay: '87ms',
-        }}
-      />
-      <div
-        data-design-id="highlight-corner-bl"
-        className="absolute bottom-0 left-0 pointer-events-none animate-corner-pulse will-change-transform"
-        style={{
-          width: Math.max(cellSize * 0.3, 8),
-          height: Math.max(cellSize * 0.3, 8),
-          borderBottom: `2px solid ${primaryColor}`,
-          borderLeft: `2px solid ${primaryColor}`,
-          borderBottomLeftRadius: 3,
-          animationDelay: '175ms',
-        }}
-      />
-      <div
-        data-design-id="highlight-corner-br"
-        className="absolute bottom-0 right-0 pointer-events-none animate-corner-pulse will-change-transform"
-        style={{
-          width: Math.max(cellSize * 0.3, 8),
-          height: Math.max(cellSize * 0.3, 8),
-          borderBottom: `2px solid ${primaryColor}`,
-          borderRight: `2px solid ${primaryColor}`,
-          borderBottomRightRadius: 3,
-          animationDelay: '262ms',
+          background: `radial-gradient(ellipse at center, ${primaryColor}40 0%, ${primaryColor}20 40%, transparent 70%)`,
+          filter: 'blur(4px)',
         }}
       />
 
-      {/* Glow effect behind the cell - CSS animation */}
+      {/* Inner radial glow - subtle pulsing */}
       <div
-        data-design-id="highlight-glow"
-        className={`absolute inset-0 pointer-events-none rounded-sm animate-pulse-glow will-change-[opacity]`}
+        data-design-id="highlight-inner-glow"
+        className="absolute inset-0 pointer-events-none rounded-sm animate-soft-pulse will-change-opacity"
         style={{
-          background: `radial-gradient(ellipse at center, ${primaryColor}50 0%, transparent 70%)`,
+          background: `radial-gradient(ellipse at center, ${primaryColor}30 0%, transparent 60%)`,
         }}
       />
 
-      {/* Scanning line effect for current player - CSS animation */}
+      {/* Smooth border glow for current player */}
       {hasCurrentPlayer && (
         <div
-          data-design-id="highlight-scan"
-          className="absolute left-0 right-0 pointer-events-none animate-scan-line will-change-transform"
+          data-design-id="highlight-border-glow"
+          className="absolute inset-0 pointer-events-none rounded-sm animate-border-breathe will-change-[opacity,box-shadow]"
           style={{
-            height: 2,
-            background: `linear-gradient(90deg, transparent 0%, ${primaryColor} 50%, transparent 100%)`,
+            boxShadow: `inset 0 0 0 2px ${primaryColor}`,
           }}
         />
       )}
 
-      {/* Pulsing border for current player - CSS animation */}
-      {hasCurrentPlayer && (
-        <div
-          data-design-id="highlight-pulse-border"
-          className="absolute inset-0 pointer-events-none rounded-sm animate-pulse-fast will-change-transform"
-          style={{
-            border: `2px solid ${primaryColor}`,
-          }}
-        />
-      )}
+      {/* Ambient light ring - very subtle */}
+      <div
+        data-design-id="highlight-ambient"
+        className="absolute inset-0 pointer-events-none rounded-sm animate-ambient-glow will-change-opacity"
+        style={{
+          boxShadow: `0 0 ${hasCurrentPlayer ? '12px' : '8px'} ${hasCurrentPlayer ? '3px' : '2px'} ${primaryColor}50`,
+        }}
+      />
 
-      {/* Multiple player indicator dots - CSS animations */}
+      {/* Multiple player indicator dots - smooth animations */}
       {players.length > 1 && (
         <div
           data-design-id="highlight-multi-indicator"
@@ -144,13 +101,15 @@ function PlayerPositionHighlight({
           {players.map((player, idx) => (
             <div
               key={player.id}
-              className={`rounded-full will-change-transform ${player.id === currentPlayerId ? 'animate-dot-pulse' : ''}`}
+              className={`rounded-full will-change-transform ${player.id === currentPlayerId ? 'animate-gentle-pulse' : ''}`}
               style={{
                 width: Math.max(cellSize * 0.08, 3),
                 height: Math.max(cellSize * 0.08, 3),
                 backgroundColor: player.color,
-                boxShadow: player.id === currentPlayerId ? `0 0 4px 1px ${player.color}` : 'none',
-                animationDelay: `${idx * 50}ms`,
+                boxShadow: player.id === currentPlayerId 
+                  ? `0 0 6px 2px ${player.color}80` 
+                  : `0 0 3px 1px ${player.color}40`,
+                animationDelay: `${idx * 150}ms`,
               }}
             />
           ))}
