@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '@/lib/game-store';
 import { LLM_MODELS, PLAYER_COLORS } from '@/lib/game-types';
@@ -19,12 +19,19 @@ interface PlayerConfig {
 
 export default function GameSetup() {
   const [apiKey, setApiKey] = useState('');
+  const [hasServerKey, setHasServerKey] = useState(false);
   const [playerConfigs, setPlayerConfigs] = useState<PlayerConfig[]>([
     { name: 'Claude', isAI: true, llmModel: 'anthropic/claude-3.5-sonnet' },
     { name: 'GPT-4o', isAI: true, llmModel: 'openai/gpt-4o' },
   ]);
-  const [autoPlay, setAutoPlay] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetch('/api/config')
+      .then(res => res.json())
+      .then(data => setHasServerKey(data.hasServerApiKey))
+      .catch(() => setHasServerKey(false));
+  }, []);
 
   const { initializeGame, setApiKey: storeApiKey } = useGameStore();
 
@@ -59,7 +66,7 @@ export default function GameSetup() {
     setError('');
     
     const hasAI = playerConfigs.some(p => p.isAI);
-    if (hasAI && !apiKey.trim()) {
+    if (hasAI && !apiKey.trim() && !hasServerKey) {
       setError('OpenRouter API key is required for AI players');
       return;
     }
@@ -69,7 +76,7 @@ export default function GameSetup() {
       return;
     }
 
-    storeApiKey(apiKey.trim());
+    storeApiKey(apiKey.trim() || 'server');
     initializeGame(playerConfigs);
   };
 
@@ -109,27 +116,38 @@ export default function GameSetup() {
 
           <CardContent data-design-id="setup-content" className="space-y-6">
             <div data-design-id="api-key-section" className="space-y-2">
-              <label className="text-sm font-medium text-zinc-300">
-                OpenRouter API Key
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-zinc-300">
+                  OpenRouter API Key
+                </label>
+                {hasServerKey && (
+                  <Badge data-design-id="server-key-badge" className="bg-emerald-600 text-white text-[10px]">
+                    ✓ Server Key Configured
+                  </Badge>
+                )}
+              </div>
               <Input
                 data-design-id="api-key-input"
                 type="password"
-                placeholder="sk-or-v1-..."
+                placeholder={hasServerKey ? 'Using server key (optional override)' : 'sk-or-v1-...'}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500"
               />
               <p className="text-xs text-zinc-500">
-                Get your API key from{' '}
-                <a 
-                  href="https://openrouter.ai/keys" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-cyan-400 hover:underline"
-                >
-                  openrouter.ai/keys
-                </a>
+                {hasServerKey ? 'Server API key is configured. You can optionally enter a different key.' : (
+                  <>
+                    Get your API key from{' '}
+                    <a 
+                      href="https://openrouter.ai/keys" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-cyan-400 hover:underline"
+                    >
+                      openrouter.ai/keys
+                    </a>
+                  </>
+                )}
               </p>
             </div>
 
